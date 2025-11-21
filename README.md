@@ -49,12 +49,12 @@ python -m venv venv
 source venv/bin/activate
 
 # 3. Installer dépendances
-pip install -r requirements.txt
+pip install -r config/requirements.txt
 
 # 4. Configurer variables d'environnement
-cp .env.example .env
+cp config/.env.example config/.env
 
-# Éditer .env et ajouter votre GITHUB_TOKEN
+# Éditer config/.env et ajouter votre GITHUB_TOKEN
 # Obtenir un token: https://github.com/settings/tokens
 ```
 
@@ -73,19 +73,14 @@ ENABLE_CACHE=true
 ### Exécution
 
 ```bash
-# Phase 0: Validation de l'environnement
-python scripts/phase0_setup.py
+# Pipeline complet (scraping + enrichissement)
+python scripts/pipeline/scrape_full_pipeline.py
 
-# Phase 1: Collecte initiale (15-25 min)
-python scripts/phase1_collect.py
+# Analyse de la base de données
+node scripts/tools/analysis/analyze-database.js
 
-# Phase 2: Enrichissement (20-40 min)
-python scripts/phase2_enrich.py
-
-# Phase 3: Validation et export (5-10 min)
-python scripts/phase3_validate.py
-
-# Résultat final: data/mcp-servers.json ✨
+# Résultat: data/mcp_servers.db (SQLite) ✨
+# Rapports: docs/reports/ 📊
 ```
 
 ---
@@ -93,37 +88,38 @@ python scripts/phase3_validate.py
 ## 📁 Structure du Projet
 
 ```
-mcp-collector/
-├── README.md                        # Ce fichier
-├── MCP_MASTER_PLAN.md              # Plan détaillé complet
-├── PYTHON_VS_JS_COMPARISON.md      # Pourquoi Python?
-├── requirements.txt                # Dépendances Python
-├── .env.example                    # Template config
-│
-├── scripts/                        # Scripts d'exécution
-│   ├── phase0_setup.py            # Validation environnement
-│   ├── phase1_collect.py          # Collecte initiale
-│   ├── phase2_enrich.py           # Enrichissement
-│   ├── phase3_validate.py         # Validation finale
-│   ├── phase4_update.py           # Mise à jour quotidienne
-│   └── dev_test.py                # Test avec 5 serveurs
-│
-├── src/                            # Code source
-│   ├── collectors/                # Collecteurs de données
-│   ├── parsers/                   # Parsers (README, package.json)
-│   ├── processors/                # Processeurs (normalisation, etc.)
-│   ├── validators/                # Validateurs (Pydantic)
-│   ├── models/                    # Modèles de données
-│   └── utils/                     # Utilitaires
-│
-└── data/                          # Données générées
-    ├── mcp-servers.json           # 🎯 RÉSULTAT FINAL
-    ├── validation-report.json     # Rapport de qualité
-    ├── changelog.md               # Historique des changements
-    ├── backups/                   # Sauvegardes quotidiennes
-    ├── cache/                     # Cache HTTP
-    └── logs/                      # Logs d'exécution
+crawler MCPhub/
+├── README.md, CLAUDE.md, DATABASE.md   # Documentation principale
+├── config/                             # ⚙️ Configuration
+│   ├── .env (gitignored)              # Variables d'environnement
+│   ├── .env.example                   # Template
+│   ├── requirements.txt               # Dépendances Python
+│   └── package.json                   # Dépendances Node.js (analyse)
+├── docs/                               # 📚 Documentation
+│   ├── guides/                        # Guides et tutoriels
+│   ├── reports/                       # Rapports d'analyse
+│   └── PROJECT_STRUCTURE.md           # Structure détaillée
+├── scripts/                            # 🛠️ Scripts
+│   ├── pipeline/                      # Scripts principaux de collecte
+│   ├── tools/                         # Outils d'analyse et maintenance
+│   └── archive/                       # Scripts complétés (historique)
+├── src/                                # 📦 Package Python
+│   ├── database/                      # Modèles SQLAlchemy
+│   ├── parsers/                       # Parsers README/tools/params
+│   ├── enrichers/                     # Enrichers GitHub/npm
+│   └── scrapers/                      # Base scraper
+├── data/                               # 💾 Données
+│   ├── mcp_servers.db                 # Base SQLite (199 serveurs)
+│   └── inspection/                    # Artifacts QA
+├── migrations/                         # 🔄 Migrations
+│   ├── schema/                        # Évolution schéma
+│   └── data/                          # Migration données
+└── tests/                              # 🧪 Tests (à venir)
 ```
+
+**📖 Structure détaillée** : Voir [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT_STRUCTURE.md)
+
+**🛠️ Guide des scripts** : Voir [`scripts/README.md`](scripts/README.md)
 
 ---
 

@@ -11,8 +11,9 @@ from typing import Dict, Optional, List
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# Load environment variables from config/.env
+project_root = Path(__file__).parent.parent.parent
+load_dotenv(project_root / 'config' / '.env')
 
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
 GITHUB_API_BASE = 'https://api.github.com'

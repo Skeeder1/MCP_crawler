@@ -28,6 +28,21 @@ class ReadmeParser:
         Returns:
             Config dict with command, args, env_vars, or None if not found
         """
+        # PHASE 1: Try JSON config blocks first (highest priority)
+        json_config = self._extract_json_config_blocks()
+        if json_config:
+            return json_config
+
+        # PHASE 2: Try git clone + install patterns (before individual commands)
+        git_config = self._extract_git_clone_install()
+        if git_config:
+            return git_config
+
+        # Try Python/pip/uvx configs
+        python_config = self._extract_python_config()
+        if python_config:
+            return python_config
+
         # Try to extract npm/npx commands
         npm_config = self._extract_npm_config()
         if npm_config:
@@ -40,9 +55,47 @@ class ReadmeParser:
 
         return None
 
+    def _extract_json_config_blocks(self) -> Optional[Dict]:
+        """
+        PHASE 1: Extract MCP config from JSON code blocks
+
+        Returns:
+            npm config dict or None
+        """
+        code_blocks = self._extract_code_blocks()
+
+        for block in code_blocks:
+            # Look for JSON blocks containing mcpServers or claude_desktop_config
+            if 'mcpServers' in block or 'claude_desktop_config' in block.lower():
+                try:
+                    # Try to parse as JSON
+                    config = json.loads(block)
+
+                    # Extract mcpServers section
+                    mcp_servers = config.get('mcpServers', {})
+
+                    # Get the first server config
+                    for server_name, server_config in mcp_servers.items():
+                        command = server_config.get('command', 'npx')
+                        args = server_config.get('args', [])
+                        env = server_config.get('env', {})
+
+                        return {
+                            'type': 'npm',
+                            'command': command,
+                            'args': args,
+                            'env_vars': list(env.keys()) if env else []
+                        }
+
+                except json.JSONDecodeError:
+                    # Try to extract partial JSON
+                    continue
+
+        return None
+
     def _extract_npm_config(self) -> Optional[Dict]:
         """
-        Extract npm/npx configuration from README
+        Extract npm/npx configuration from README (IMPROVED)
 
         Returns:
             npm config dict or None
@@ -51,8 +104,8 @@ class ReadmeParser:
         code_blocks = self._extract_code_blocks()
 
         for block in code_blocks:
-            # Look for npx command
-            npx_match = re.search(r'npx\s+((?:-\w+\s+)*)([@\w\-\/]+)', block)
+            # Look for npx command (improved pattern)
+            npx_match = re.search(r'npx\s+((?:--?[\w-]+\s+)*)([@\w\-\/\.]+)', block)
             if npx_match:
                 flags = npx_match.group(1).strip().split() if npx_match.group(1) else []
                 package = npx_match.group(2)
@@ -68,18 +121,134 @@ class ReadmeParser:
                     'package': package
                 }
 
-            # Look for npm install command
-            npm_match = re.search(r'npm\s+install\s+((?:-\w+\s+)*)([@\w\-\/]+)', block)
+            # PHASE 1: Improved npm install pattern (with or without -g)
+            npm_install_pattern = r'npm\s+install\s+((?:-g\s+)?)([@\w\-\/\.]+)'
+            npm_match = re.search(npm_install_pattern, block)
             if npm_match:
-                flags = npm_match.group(1).strip().split() if npm_match.group(1) else []
+                global_flag = npm_match.group(1).strip()
                 package = npm_match.group(2)
+
+                args = ['install']
+                if global_flag:
+                    args.append('-g')
+                args.append(package)
 
                 return {
                     'type': 'npm',
                     'command': 'npm',
-                    'args': ['install'] + flags + [package],
-                    'package': package
+                    'args': args,
+                    'package': package,
+                    'runtime': 'node'
                 }
+
+        return None
+
+    def _extract_python_config(self) -> Optional[Dict]:
+        """
+        PHASE 1 & 2: Extract Python/pip/uvx configurations
+
+        Returns:
+            python config dict or None
+        """
+        code_blocks = self._extract_code_blocks()
+
+        for block in code_blocks:
+            # PHASE 1: uvx support (Python package runner)
+            uvx_pattern = r'uvx\s+((?:--[\w-]+\s+)*)([@\w\-\/\.]+)'
+            uvx_match = re.search(uvx_pattern, block)
+            if uvx_match:
+                flags = uvx_match.group(1).strip()
+                package = uvx_match.group(2)
+
+                args = []
+                if flags:
+                    args.extend(flags.split())
+                args.append(package)
+
+                return {
+                    'type': 'npm',  # Store as npm type for now (same table)
+                    'command': 'uvx',
+                    'args': args,
+                    'package': package,
+                    'runtime': 'python'
+                }
+
+            # PHASE 2: pip install pattern
+            pip_pattern = r'pip\s+install\s+((?:-e\s+)?)([\w\-\.]+)'
+            pip_match = re.search(pip_pattern, block)
+            if pip_match:
+                editable = pip_match.group(1).strip()
+                package = pip_match.group(2)
+
+                args = ['install']
+                if editable:
+                    args.append('-e')
+                args.append(package)
+
+                return {
+                    'type': 'npm',  # Store as npm type for now
+                    'command': 'pip',
+                    'args': args,
+                    'package': package,
+                    'runtime': 'python'
+                }
+
+            # PHASE 2: python -m module execution
+            python_m_pattern = r'python\s+-m\s+([\w\.\_]+)'
+            python_match = re.search(python_m_pattern, block)
+            if python_match:
+                module = python_match.group(1)
+
+                return {
+                    'type': 'npm',  # Store as npm type for now
+                    'command': 'python',
+                    'args': ['-m', module],
+                    'package': module,
+                    'runtime': 'python'
+                }
+
+        return None
+
+    def _extract_git_clone_install(self) -> Optional[Dict]:
+        """
+        PHASE 2: Extract git clone + install patterns
+
+        Returns:
+            git-based config dict or None
+        """
+        # Look for git clone commands
+        git_clone_pattern = r'git\s+clone\s+(https?://[^\s]+)'
+
+        matches = re.findall(git_clone_pattern, self.content)
+        if matches:
+            clone_url = matches[0]
+
+            # Look for install commands after git clone (within next 500 chars)
+            idx = self.content.find(clone_url)
+            if idx != -1:
+                section = self.content[idx:idx+500]
+
+                # Check for npm install
+                if 'npm install' in section:
+                    return {
+                        'type': 'npm',
+                        'command': 'git',
+                        'args': ['clone', clone_url],
+                        'package': clone_url.split('/')[-1].replace('.git', ''),
+                        'runtime': 'node',
+                        'requires_clone': True
+                    }
+
+                # Check for pip install
+                if 'pip install' in section:
+                    return {
+                        'type': 'npm',  # Store as npm type for now
+                        'command': 'git',
+                        'args': ['clone', clone_url],
+                        'package': clone_url.split('/')[-1].replace('.git', ''),
+                        'runtime': 'python',
+                        'requires_clone': True
+                    }
 
         return None
 

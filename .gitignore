@@ -43,6 +43,9 @@ venv.bak/
 .DS_Store
 
 # === Environment Variables (IMPORTANT!) ===
+config/.env
+config/.env.local
+config/.env.*.local
 .env
 .env.local
 .env.*.local
@@ -51,6 +54,7 @@ venv.bak/
 data/cache/
 data/logs/
 data/backups/
+backups/
 *.log
 
 # === Temporary Files ===

@@ -1,0 +1,63 @@
+# ============================================================================
+# MCP Servers Auto-Collector - Python Dependencies
+# ============================================================================
+
+# === HTTP Async & Requests ===
+aiohttp>=3.9.0              # Requêtes HTTP asynchrones
+aiohttp-client-cache>=0.11.0  # Cache HTTP automatique
+httpx>=0.27.0               # Alternative async (optionnel)
+
+# === Validation & Typage ===
+pydantic>=2.5.0             # Validation de données avec type hints
+pydantic-settings>=2.1.0    # Gestion configuration
+
+# === Parsing HTML/Markdown ===
+beautifulsoup4>=4.12.0      # Parse HTML/Markdown
+lxml>=5.1.0                 # Backend rapide pour BeautifulSoup4
+markdown-it-py>=3.0.0       # Parse Markdown avancé
+
+# === Data Processing ===
+pandas>=2.1.0               # Manipulation datasets (optionnel mais recommandé)
+numpy>=1.26.0               # Calculs numériques (dépendance pandas)
+
+# === Git Operations ===
+GitPython>=3.1.40           # Clone, pull, diff repositories
+
+# === Rate Limiting & Retry ===
+aiolimiter>=1.1.0           # Rate limiting pour async
+tenacity>=8.2.3             # Retry logic avec exponential backoff
+
+# === Config & Environment ===
+python-dotenv>=1.0.0        # Charger variables d'environnement depuis .env
+
+# === Logging & Monitoring ===
+loguru>=0.7.2               # Logging élégant et coloré
+tqdm>=4.66.0                # Progress bars interactives
+
+# === Dates & Time ===
+python-dateutil>=2.8.2      # Parsing et manipulation de dates
+
+# === NLP (Optionnel - pour extraction tags avancée) ===
+# Décommenter si besoin d'extraction de tags NLP
+# spacy>=3.7.0              # NLP pour extraction de mots-clés
+# nltk>=3.8.1               # Alternative NLP
+
+# === Testing (Dev) ===
+pytest>=7.4.0               # Framework de tests
+pytest-asyncio>=0.23.0      # Support async dans pytest
+pytest-cov>=4.1.0           # Coverage de code
+
+# === Type Checking (Dev) ===
+mypy>=1.8.0                 # Type checker statique
+
+# === Code Quality (Dev) ===
+black>=23.12.0              # Code formatter
+isort>=5.13.0               # Import sorter
+flake8>=7.0.0               # Linter
+pylint>=3.0.0               # Linter avancé
+
+# === API Server (Optionnel - Phase 5) ===
+# Décommenter si besoin d'API REST
+# fastapi>=0.109.0          # Framework API REST
+# uvicorn>=0.27.0           # ASGI server
+# uvicorn[standard]         # Avec dépendances standard
