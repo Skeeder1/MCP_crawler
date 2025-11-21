@@ -1,0 +1,99 @@
+# ============================================================================
+# MCP Servers Auto-Collector - .gitignore
+# ============================================================================
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# === Virtual Environment ===
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# === IDEs ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# === Environment Variables (IMPORTANT!) ===
+.env
+.env.local
+.env.*.local
+
+# === Data Files (À NE PAS COMMIT) ===
+data/cache/
+data/logs/
+data/backups/
+*.log
+
+# === Temporary Files ===
+tmp/
+temp/
+*.tmp
+
+# === OS Files ===
+Thumbs.db
+.DS_Store
+
+# === Testing ===
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# === Jupyter Notebooks ===
+.ipynb_checkpoints
+*.ipynb
+
+# === mypy ===
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# === Specific to project ===
+# Garder structure mais pas le contenu
+data/mcp-servers-*.json
+!data/.gitkeep
+
+# Clone du registre MCP (trop gros)
+data/cache/mcp-registry-clone/
+
+# Fichiers de debug
+debug_*.json
+test_output.json
+
+# === TypeScript Compiled Files ===
+scripts/*.js
+!scripts/config.js
+
+# === Temporary/Error Files ===
+temp_*.json
+nul

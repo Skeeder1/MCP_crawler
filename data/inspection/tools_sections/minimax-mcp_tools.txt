@@ -1,0 +1,14 @@
+SERVER: minimax-mcp
+================================================================================
+
+## Available Tools
+| tool  | description  |
+|-|-|
+|`text_to_audio`|Convert text to audio with a given voice|
+|`list_voices`|List all voices available|
+|`voice_clone`|Clone a voice using provided audio files|
+|`generate_video`|Generate a video from a prompt|
+|`text_to_image`|Generate a image from a prompt|
+|`query_video_generation`|Query the result of video generation task|
+|`music_generation`|Generate a music track from a prompt and lyrics|
+|`voice_design`|Generate a voice from a prompt using preview text|

@@ -1,0 +1,32 @@
+SERVER: jina-mcp-tools
+================================================================================
+
+## Available Tools
+
+### jina_reader
+
+Extract and read web page content.
+
+**Parameters:**
+- `url` - URL to read (required)
+- `page` - Page number for paginated content (default: 1)
+- `customTimeout` - Timeout override in seconds (optional)
+
+**Features:**
+- Automatic pagination for large documents
+- LRU cache (50 URLs) for instant subsequent page requests
+- GitHub file URLs automatically converted to raw content URLs
+
+### jina_search / jina_search_vip
+
+Search the web. Returns partial content; use `jina_reader` for full content. Requires API key.
+
+Tool registered depends on `--search-endpoint`:
+- `jina_search` → `standard` (s.jina.ai, default)
+- `jina_search_vip` → `vip` (svip.jina.ai)
+
+**Parameters:**
+- `query` - Search query (required)
+- `count` - Number of results (default: 5)
+- `siteFilter` - Limit to specific domain (e.g., "github.com")
+

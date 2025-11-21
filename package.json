@@ -1,0 +1,30 @@
+{
+  "name": "mcp-crawler-analysis",
+  "version": "1.0.0",
+  "description": "MCP Servers Database Analysis Tools",
+  "main": "scripts/analyze-database.js",
+  "scripts": {
+    "analyze": "node scripts/analyze-database.js",
+    "analyze:dev": "ts-node scripts/analyze-database.ts",
+    "build": "tsc"
+  },
+  "keywords": [
+    "mcp",
+    "database",
+    "analysis"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.5",
+    "date-fns": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.10.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
+  }
+}

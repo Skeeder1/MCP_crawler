@@ -1,0 +1,7 @@
+SERVER: mcp-server-flomo
+================================================================================
+
+## Tools
+
+- `write_note` - Write text notes to Flomo
+  - Takes content as required parameters
